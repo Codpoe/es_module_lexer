@@ -1,6 +1,6 @@
 {
   "name": "@rust-it/es-module-lexer",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A Rust version of es-module-lexer",
   "keywords": [
     "rust",
@@ -27,6 +27,7 @@
   "napi": {
     "name": "es-module-lexer",
     "triples": {
+      "defaults": false,
       "additional": [
         "aarch64-apple-darwin",
         "aarch64-unknown-linux-gnu",
