@@ -1,3 +1,3 @@
-# `@rs/es-module-lexer-linux-arm64-musl`
+# `@rust-it/es-module-lexer-linux-arm64-musl`
 
-This is the **aarch64-unknown-linux-musl** binary for `@rs/es-module-lexer`
+This is the **aarch64-unknown-linux-musl** binary for `@rust-it/es-module-lexer`

@@ -1,6 +1,6 @@
 [package]
 edition = "2021"
-name = "rs_es-module-lexer"
+name = "rust-it_es-module-lexer"
 version = "0.0.0"
 
 [lib]

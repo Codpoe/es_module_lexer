@@ -7,12 +7,19 @@ permissions:
   contents: write
   id-token: write
 on:
-  workflow_dispatch:
-    inputs:
-      publish:
-        description: "Need publish ?"
-        required: true
-        type: boolean
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - "**"
+    paths-ignore:
+      - "**/*.md"
+      - LICENSE
+      - "**/*.gitignore"
+      - .editorconfig
+      - docs/**
+  pull_request: null
+  workflow_dispatch: null
 jobs:
   build:
     strategy:

@@ -1,5 +1,5 @@
 {
-  "name": "@rs/es-module-lexer",
+  "name": "@rust-it/es-module-lexer",
   "version": "0.0.0",
   "description": "A Rust version of es-module-lexer",
   "main": "index.js",
@@ -38,7 +38,7 @@
     "build": "napi build --cargo-cwd crates/binding --platform --release",
     "build:debug": "napi build --cargo-cwd crates/binding --platform",
     "prepublishOnly": "napi prepublish -t npm",
-    "test": "vitest",
+    "test": "vitest --run",
     "bench": "vitest bench",
     "universal": "napi universal",
     "version": "napi version"

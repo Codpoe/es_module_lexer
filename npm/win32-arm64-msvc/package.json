@@ -1,5 +1,5 @@
 {
-  "name": "@rs/es-module-lexer-win32-arm64-msvc",
+  "name": "@rust-it/es-module-lexer-win32-arm64-msvc",
   "version": "0.0.0",
   "os": [
     "win32"

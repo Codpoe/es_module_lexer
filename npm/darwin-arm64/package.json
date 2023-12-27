@@ -1,5 +1,5 @@
 {
-  "name": "@rs/es-module-lexer-darwin-arm64",
+  "name": "@rust-it/es-module-lexer-darwin-arm64",
   "version": "0.0.0",
   "os": [
     "darwin"

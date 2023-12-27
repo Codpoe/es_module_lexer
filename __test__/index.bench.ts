@@ -25,23 +25,23 @@ bench('es-module-lexer', async () => {
   });
 });
 
-bench('@rs/es-module-lexer', () => {
+bench('@rust-it/es-module-lexer', () => {
   files.forEach(f => {
     parseByOxc(f.code, f.filename);
   });
 });
 
-bench('@rs/es-module-lexer async', async () => {
+bench('@rust-it/es-module-lexer async', async () => {
   await Promise.all(files.map(async f => {
     await parseAsyncByOxc(f.code, f.filename);
   }));
 });
 
-bench('@rs/es-module-lexer multiple', () => {
+bench('@rust-it/es-module-lexer multiple', () => {
   parseMultipleByOxc(files.map(f => ({ sourceText: f.code, filePath: f.filename })));
 });
 
-bench('@rs/es-module-lexer multiple async', async () => {
+bench('@rust-it/es-module-lexer multiple async', async () => {
   await parseMultipleAsyncByOxc(files.map(f => ({ sourceText: f.code, filePath: f.filename })));
 });
 
