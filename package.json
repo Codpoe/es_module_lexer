@@ -1,7 +1,27 @@
 {
   "name": "@rust-it/es-module-lexer",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A Rust version of es-module-lexer",
+  "keywords": [
+    "rust",
+    "napi-rs",
+    "oxc",
+    "es-module-lexer"
+  ],
+  "author": "Codpoe <codpoe.me@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Codpoe/es_module_lexer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Codpoe/es_module_lexer/issues"
+  },
+  "homepage": "https://github.com/Codpoe/es_module_lexer#readme",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "main": "index.js",
   "types": "index.d.ts",
   "napi": {
@@ -20,7 +40,6 @@
       ]
     }
   },
-  "license": "MIT",
   "devDependencies": {
     "@napi-rs/cli": "^2.17.0",
     "@types/node": "^20.10.5",
