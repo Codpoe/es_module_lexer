@@ -1,0 +1,46 @@
+{
+  "name": "@rs/es-module-lexer",
+  "version": "0.0.0",
+  "description": "A Rust version of es-module-lexer",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "napi": {
+    "name": "es-module-lexer",
+    "triples": {
+      "additional": [
+        "aarch64-apple-darwin",
+        "aarch64-unknown-linux-gnu",
+        "aarch64-unknown-linux-musl",
+        "aarch64-pc-windows-msvc",
+        "x86_64-apple-darwin",
+        "x86_64-unknown-linux-gnu",
+        "x86_64-unknown-linux-musl",
+        "x86_64-pc-windows-msvc",
+        "armv7-unknown-linux-gnueabihf"
+      ]
+    }
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@napi-rs/cli": "^2.17.0",
+    "@types/node": "^20.10.5",
+    "es-module-lexer": "^1.4.1",
+    "rs-module-lexer": "^2.1.1",
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0"
+  },
+  "packageManager": "pnpm@8.11.0",
+  "engines": {
+    "node": ">= 18"
+  },
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "build": "napi build --cargo-cwd crates/binding --platform --release",
+    "build:debug": "napi build --cargo-cwd crates/binding --platform",
+    "prepublishOnly": "napi prepublish -t npm",
+    "test": "vitest",
+    "bench": "vitest bench",
+    "universal": "napi universal",
+    "version": "napi version"
+  }
+}

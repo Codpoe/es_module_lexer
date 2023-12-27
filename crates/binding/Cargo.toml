@@ -1,0 +1,16 @@
+[package]
+edition = "2021"
+name = "rs_es-module-lexer"
+version = "0.0.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Default enable napi4 feature, see https://nodejs.org/api/n-api.html#node-api-version-matrix
+napi = { version = "2.12.2", default-features = false, features = ["napi4"] }
+napi-derive = "2.12.2"
+es_module_lexer = { path = "../es_module_lexer" }
+
+[build-dependencies]
+napi-build = "2.0.1"

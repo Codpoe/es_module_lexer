@@ -1,0 +1,16 @@
+cargo-features = ["strip"]
+
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+edition = "2021"
+authors = ["Codpoe <codpoe.me@gmail.com>"]
+description = "A Rust version of es-module-lexer"
+keywords = ["JavaScript", "TypeScript", "parser"]
+repository = "https://github.com/codpoe/es_module_lexer"
+license = "MIT"
+
+[profile.release]
+lto = true
