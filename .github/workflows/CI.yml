@@ -187,10 +187,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - name: Install pnpm
-        run: npm install -g pnpm@8
-      - name: Install dependencies
-        run: pnpm install
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
@@ -200,7 +196,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-slim pnpm test
+        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-slim sh -c "npm install -g pnpm@8 && pnpm install && pnpm test"
   test-linux-x64-musl-binding:
     name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
@@ -218,10 +214,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - name: Install pnpm
-        run: npm install -g pnpm@8
-      - name: Install dependencies
-        run: pnpm install
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
@@ -231,7 +223,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine pnpm test
+        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine sh -c "npm install -g pnpm@8 && pnpm install && pnpm test"
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
     needs:
@@ -253,13 +245,6 @@ jobs:
       - name: List packages
         run: ls -R .
         shell: bash
-      - name: Install pnpm
-        run: npm install -g pnpm@8
-      - name: Install dependencies
-        run: |
-          pnpm config set supportedArchitectures.cpu "arm64"
-          pnpm config set supportedArchitectures.libc "glibc"
-          pnpm install
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -272,6 +257,8 @@ jobs:
           options: "--platform linux/arm64 -v ${{ github.workspace }}:/build -w /build"
           run: |
             set -e
+            npm install -g pnpm@8
+            pnpm install
             pnpm test
             ls -la
   test-linux-aarch64-musl-binding:
@@ -289,13 +276,6 @@ jobs:
       - name: List packages
         run: ls -R .
         shell: bash
-      - name: Install pnpm
-        run: npm install -g pnpm@8
-      - name: Install dependencies
-        run: |
-          pnpm config set supportedArchitectures.cpu "arm64"
-          pnpm config set supportedArchitectures.libc "musl"
-          pnpm install
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -308,6 +288,8 @@ jobs:
           options: "--platform linux/arm64 -v ${{ github.workspace }}:/build -w /build"
           run: |
             set -e
+            npm install -g pnpm@8
+            pnpm install
             pnpm test
   test-linux-arm-gnueabihf-binding:
     name: Test bindings on armv7-unknown-linux-gnueabihf - node@${{ matrix.node }}
@@ -330,12 +312,6 @@ jobs:
       - name: List packages
         run: ls -R .
         shell: bash
-      - name: Install pnpm
-        run: npm install -g pnpm@8
-      - name: Install dependencies
-        run: |
-          pnpm config set supportedArchitectures.cpu "arm"
-          pnpm install
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -348,6 +324,8 @@ jobs:
           options: "--platform linux/arm/v7 -v ${{ github.workspace }}:/build -w /build"
           run: |
             set -e
+            npm install -g pnpm@8
+            pnpm install
             pnpm test
             ls -la
   publish:
@@ -382,11 +360,11 @@ jobs:
       - name: Publish
         run: |
           npm config set provenance true
-          if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
+          if git log -1 --pretty=%B | grep "^chore: release [0-9]\+\.[0-9]\+\.[0-9]\+$";
           then
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --access public
-          elif git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+";
+          elif git log -1 --pretty=%B | grep "^chore: release [0-9]\+\.[0-9]\+\.[0-9]\+";
           then
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --tag next --access public
