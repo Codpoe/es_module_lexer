@@ -20,6 +20,8 @@ export { x as 'external name' } from 'external';
 // Comments provided to demonstrate edge cases
 import /*comment!*/ (  'asdf', { assert: { type: 'json' }});
 import /*comment!*/.meta.asdf;
+
+export default function foo() {}
 `;
 
   const outputFromOxc = parseByOxc(sourceText, 'index.js');

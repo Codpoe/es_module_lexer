@@ -1,7 +1,7 @@
 use oxc_ast::{
   ast::{
-    BindingPatternKind, Declaration, ExportDefaultDeclarationKind, Expression, ModuleDeclaration,
-    Statement,
+    BindingIdentifier, BindingPatternKind, Declaration, ExportDefaultDeclarationKind, Expression,
+    ModuleDeclaration, Statement,
   },
   AstKind, Visit,
 };
@@ -97,6 +97,23 @@ pub struct Visitor<'a> {
   pub source_text_chars: Vec<char>,
   pub byte_to_char: Vec<usize>,
   pub result: ParseResult,
+}
+
+trait AddToExports {
+  fn add_to_exports(&self, visitor: &mut Visitor);
+}
+
+impl AddToExports for BindingIdentifier {
+  fn add_to_exports(&self, visitor: &mut Visitor) {
+    visitor.add_export(Export {
+      n: Some(self.name.to_string()),
+      s: self.span.start,
+      e: self.span.end,
+      ln: Some(self.name.to_string()),
+      ls: self.span.start as i32,
+      le: self.span.end as i32,
+    });
+  }
 }
 
 enum FindIndexByCharType {
@@ -255,6 +272,7 @@ impl<'a> Visit<'a> for Visitor<'a> {
               }
               ExportDefaultDeclarationKind::ClassDeclaration(class_decl) => {
                 if let Some(id) = &class_decl.id {
+                  export.ln = Some(id.name.to_string());
                   export.ls = id.span.start as i32;
                   export.le = id.span.end as i32;
                 }
@@ -319,8 +337,6 @@ impl<'a> Visit<'a> for Visitor<'a> {
             if let Some(inner_decl) = &decl.declaration {
               self.result.facade = false;
 
-              let mut export = Export::default();
-
               match inner_decl {
                 // export const a = 1;
                 //              ^
@@ -329,12 +345,7 @@ impl<'a> Visit<'a> for Visitor<'a> {
                     if let BindingPatternKind::BindingIdentifier(id) =
                       &var_decl.declarations[0].id.kind
                     {
-                      export.n = Some(id.name.to_string());
-                      export.s = id.span.start;
-                      export.e = id.span.end;
-                      export.ln = export.n.clone();
-                      export.ls = export.s as i32;
-                      export.le = export.e as i32;
+                      id.add_to_exports(self);
                     }
                   }
                 }
@@ -342,30 +353,27 @@ impl<'a> Visit<'a> for Visitor<'a> {
                 //                 ^^^
                 Declaration::FunctionDeclaration(fn_decl) => {
                   if let Some(id) = &fn_decl.id {
-                    export.n = Some(id.name.to_string());
-                    export.s = id.span.start;
-                    export.e = id.span.end;
-                    export.ln = export.n.clone();
-                    export.ls = export.s as i32;
-                    export.le = export.e as i32;
+                    id.add_to_exports(self);
                   }
                 }
                 // export class Bar {}
                 //              ^^^
                 Declaration::ClassDeclaration(class_decl) => {
                   if let Some(id) = &class_decl.id {
-                    export.n = Some(id.name.to_string());
-                    export.s = id.span.start;
-                    export.e = id.span.end;
-                    export.ln = export.n.clone();
-                    export.ls = export.s as i32;
-                    export.le = export.e as i32;
+                    id.add_to_exports(self);
                   }
+                }
+                Declaration::TSEnumDeclaration(enum_decl) => {
+                  enum_decl.id.add_to_exports(self);
+                }
+                Declaration::TSInterfaceDeclaration(interface_decl) => {
+                  interface_decl.id.add_to_exports(self);
+                }
+                Declaration::TSTypeAliasDeclaration(type_alias_decl) => {
+                  type_alias_decl.id.add_to_exports(self);
                 }
                 _ => (),
               }
-
-              self.add_export(export);
             }
 
             // export { c as d }

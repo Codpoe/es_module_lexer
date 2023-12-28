@@ -11,8 +11,6 @@ npm install @rust-it/es-module-lexer
 
 ## Usage
 
-sync:
-
 ```ts
 import { parse, parseAsync } from '@rust-it/es-module-lexer';
 
@@ -24,7 +22,7 @@ const { imports, exports } = parse(source, 'index.ts');
 const { imports, exports } = await parseAsync(source, 'index.ts');
 ```
 
-multiple files:
+parse multiple files:
 
 ```ts
 import { parseMultiple, parseMultipleAsync } from '@rust-it/es-module-lexer';
@@ -50,20 +48,20 @@ const { imports, exports } = await parseMultipleAsync(inputs);
 
 ## Benchmark
 
-Parse files in [__test__/samples](https://github.com/codpoe/es_module_lexer/tree/master/__test__/samples).
+Parse [sample files](https://github.com/codpoe/es_module_lexer/tree/master/__test__/samples).
 
 ```sh
  ✓ __test__/index.bench.ts (9) 10778ms
-     name                                     hz      min      max     mean
-   · es-module-lexer                     36.7348  26.5142  27.7018  27.2221   fastest
-   · @rust-it/es-module-lexer                  8.4034   114.91   124.62   119.00  
-   · @rust-it/es-module-lexer async           24.6149  38.4170  44.5475  40.6257  
-   · @rust-it/es-module-lexer multiple        26.4290  35.4089  41.0913  37.8372  
-   · @rust-it/es-module-lexer multiple async  26.5319  35.8229  39.6239  37.6905  
-   · rs-module-lexer                      5.7273   172.67   177.16   174.60   slowest
-   · rs-module-lexer async               15.8369  59.5024  69.4358  63.1438  
-   · rs-module-lexer multiple            18.3675  51.5449  56.9917  54.4440  
-   · rs-module-lexer multiple async      17.8458  51.1092  64.5350  56.0355  
+     name                                     hz       mean
+   · es-module-lexer                          36.7348  27.2221   fastest
+   · @rust-it/es-module-lexer                  8.4034   119.00  
+   · @rust-it/es-module-lexer async           24.6149  40.6257  
+   · @rust-it/es-module-lexer multiple        26.4290  37.8372  
+   · @rust-it/es-module-lexer multiple async  26.5319  37.6905  
+   · rs-module-lexer                           5.7273   174.60   slowest
+   · rs-module-lexer async                    15.8369  63.1438  
+   · rs-module-lexer multiple                 18.3675  54.4440  
+   · rs-module-lexer multiple async           17.8458  56.0355  
 
 
  BENCH  Summary
