@@ -39,9 +39,15 @@ const inputs = [
 ];
 
 // sync
-const { imports, exports } = parseMultiple(inputs);
+const results = parseMultiple(inputs);
 // async
-const { imports, exports } = await parseMultipleAsync(inputs);
+const results = await parseMultipleAsync(inputs);
+
+// > results:
+// {
+//   'index.ts': { imports, exports, ... },
+//   'other.ts': { imports, exports, ... },
+// }
 ```
 
 > Check out [es-module-lexer](https://github.com/guybedford/es-module-lexer) for details of the parse results.
