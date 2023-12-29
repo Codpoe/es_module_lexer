@@ -23,5 +23,6 @@ import /*comment!*/.meta.asdf;
     file_path,
   }]);
 
-  assert!(result.is_ok());
+  assert_eq!(result.len(), 1);
+  assert!(result.contains_key(file_path));
 }

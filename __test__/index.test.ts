@@ -47,10 +47,11 @@ import /*comment!*/ (  'asdf', { assert: { type: 'json' }});
 import /*comment!*/.meta.asdf;
 `;
 
-  const outputFromOxc = parseMultipleByOxc([{ sourceText, filePath: 'index.js' }, { sourceText, filePath: 'index.js' }]);
-  const [imports, exports, facade, hasModuleSyntax] = parseByLexer(sourceText, 'index.js');
+  const outputFromOxc = parseMultipleByOxc([{ sourceText, filePath: 'a.js' }, { sourceText, filePath: 'b.js' }]);
+  const [imports, exports, facade, hasModuleSyntax] = parseByLexer(sourceText, 'a.js');
 
-  expect(outputFromOxc[0]).toEqual({ imports, exports, facade, hasModuleSyntax });
+  expect(outputFromOxc['a.js']).toEqual({ imports, exports, facade, hasModuleSyntax });
+  expect(outputFromOxc['b.js']).toEqual({ imports, exports, facade, hasModuleSyntax });
 });
 
 test('facade', () => {

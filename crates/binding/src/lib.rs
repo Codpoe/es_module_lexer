@@ -3,10 +3,12 @@
 #[macro_use]
 extern crate napi_derive;
 
+use std::collections::HashMap;
+
 use es_module_lexer::{
   parse as parse_es_module, parse_multiple as parse_multiple_es_module, ParseResult,
 };
-use napi::{bindgen_prelude::AsyncTask, Task};
+use napi::{bindgen_prelude::AsyncTask, Error, Task};
 
 #[napi(object)]
 pub struct Import {
@@ -76,8 +78,11 @@ impl From<ParseResult> for Output {
 }
 
 #[napi]
-pub fn parse(source_text: String, file_path: String) -> Output {
-  parse_es_module(&source_text, &file_path).unwrap().into()
+pub fn parse(source_text: String, file_path: String) -> Result<Output, Error> {
+  match parse_es_module(&source_text, &file_path) {
+    Ok(value) => Ok(value.into()),
+    Err(errors) => Err(Error::from_reason(format!("\n{}", errors.join("\n")))),
+  }
 }
 
 pub struct ParseTask {
@@ -90,15 +95,15 @@ impl Task for ParseTask {
   type JsValue = Output;
 
   fn compute(&mut self) -> napi::Result<Self::Output> {
-    Ok(
-      parse_es_module(&self.source_text, &self.file_path)
-        .unwrap()
-        .into(),
-    )
+    parse(self.source_text.clone(), self.file_path.clone())
   }
 
   fn resolve(&mut self, _env: napi::Env, output: Self::Output) -> napi::Result<Self::JsValue> {
     Ok(output)
+  }
+
+  fn reject(&mut self, _env: napi::Env, err: Error) -> napi::Result<Self::JsValue> {
+    Err(err)
   }
 }
 
@@ -110,6 +115,7 @@ pub fn parse_async(source_text: String, file_path: String) -> AsyncTask<ParseTas
   })
 }
 
+#[derive(Clone)]
 #[napi(object)]
 pub struct ParseMultipleInput {
   pub source_text: String,
@@ -117,8 +123,8 @@ pub struct ParseMultipleInput {
 }
 
 #[napi]
-pub fn parse_multiple(inputs: Vec<ParseMultipleInput>) -> Vec<Output> {
-  parse_multiple_es_module(
+pub fn parse_multiple(inputs: Vec<ParseMultipleInput>) -> Result<HashMap<String, Output>, Error> {
+  let results = parse_multiple_es_module(
     &inputs
       .iter()
       .map(move |input| es_module_lexer::ParseMultipleInput {
@@ -126,11 +132,30 @@ pub fn parse_multiple(inputs: Vec<ParseMultipleInput>) -> Vec<Output> {
         file_path: &input.file_path,
       })
       .collect::<Vec<es_module_lexer::ParseMultipleInput>>(),
-  )
-  .unwrap()
-  .into_iter()
-  .map(|x| x.into())
-  .collect()
+  );
+
+  let mut outputs: HashMap<String, Output> = HashMap::new();
+  let mut errors: Vec<String> = Vec::new();
+
+  for (file_path, result) in results {
+    match result {
+      Ok(value) => {
+        outputs.insert(file_path, value.into());
+      }
+      Err(errs) => {
+        errs
+          .into_iter()
+          .map(|error| format!("\n{file_path}:\n{error}"))
+          .for_each(|err| errors.push(err));
+      }
+    }
+  }
+
+  if errors.len() > 0 {
+    return Err(Error::from_reason(errors.join("")));
+  }
+
+  Ok(outputs)
 }
 
 pub struct ParseMultipleTask {
@@ -138,34 +163,23 @@ pub struct ParseMultipleTask {
 }
 
 impl Task for ParseMultipleTask {
-  type Output = Vec<Output>;
-  type JsValue = Vec<Output>;
+  type Output = HashMap<String, Output>;
+  type JsValue = HashMap<String, Output>;
 
   fn compute(&mut self) -> napi::Result<Self::Output> {
-    Ok(
-      parse_multiple_es_module(
-        &self
-          .inputs
-          .iter()
-          .map(move |input| es_module_lexer::ParseMultipleInput {
-            source_text: &input.source_text,
-            file_path: &input.file_path,
-          })
-          .collect::<Vec<es_module_lexer::ParseMultipleInput>>(),
-      )
-      .unwrap()
-      .into_iter()
-      .map(|x| x.into())
-      .collect(),
-    )
+    parse_multiple(self.inputs.clone())
   }
 
   fn resolve(&mut self, _env: napi::Env, output: Self::Output) -> napi::Result<Self::JsValue> {
     Ok(output)
   }
+
+  fn reject(&mut self, _env: napi::Env, err: Error) -> napi::Result<Self::JsValue> {
+    Err(err)
+  }
 }
 
-#[napi(ts_return_type = "Promise<Output[]>")]
+#[napi(ts_return_type = "Promise<Record<string, Output>>")]
 pub fn parse_multiple_async(inputs: Vec<ParseMultipleInput>) -> AsyncTask<ParseMultipleTask> {
   AsyncTask::new(ParseMultipleTask { inputs })
 }

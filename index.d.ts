@@ -32,5 +32,5 @@ export interface ParseMultipleInput {
   sourceText: string
   filePath: string
 }
-export function parseMultiple(inputs: Array<ParseMultipleInput>): Array<Output>
-export function parseMultipleAsync(inputs: Array<ParseMultipleInput>): Promise<Output[]>
+export function parseMultiple(inputs: Array<ParseMultipleInput>): Record<string, Output>
+export function parseMultipleAsync(inputs: Array<ParseMultipleInput>): Promise<Record<string, Output>>
